@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PCI - Demo Preis & Angebots-App (Dummy)</title>
+  <style>
+    :root{
+      --bg:#f5f6f8;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --pci-orange:#f36a10;
+      --pci-orange-dark:#d65607;
+      --accent:#111827;
+      --chip:#f1f5f9;
+      --good:#0f766e;
+      --shadow: 0 10px 20px rgba(17,24,39,.06), 0 2px 6px rgba(17,24,39,.06);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+    }
+    .app{
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+    }
+    header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .logo{
+      width:44px; height:44px; border-radius:12px;
+      background: radial-gradient(120% 120% at 20% 15%, #ffb37d 0%, var(--pci-orange) 45%, var(--pci-orange-dark) 100%);
+      box-shadow: var(--shadow);
+      position:relative;
+    }
+    .logo:after{
+      content:"PCI";
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      color:white;
+      font-weight:800;
+      letter-spacing:.5px;
+    }
+    .title h1{
+      font-size:16px; margin:0; line-height:1.2;
+    }
+    .title p{
+      margin:2px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .top-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pill{
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      box-shadow: 0 1px 0 rgba(17,24,39,.03);
+      display:flex; align-items:center; gap:8px;
+      max-width: 520px;
+    }
+    .pill strong{font-family:var(--mono); font-size:12px}
+    .btn{
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .04s ease, background .2s ease, border-color .2s ease;
+      box-shadow: 0 1px 0 rgba(17,24,39,.03);
+      font-size: 13px;
+      user-select:none;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn:hover{background:#f9fafb}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: var(--pci-orange);
+      color:white;
+      border-color: transparent;
+    }
+    .btn.primary:hover{background: var(--pci-orange-dark)}
+    .btn.ghost{
+      background: transparent;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr; }
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-header{
+      padding: 14px 14px 12px;
+      border-bottom: 1px dashed var(--line);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .card-header h2{
+      font-size: 14px;
+      margin:0;
+    }
+    .sub{
+      font-size:12px; color:var(--muted);
+      margin-top:2px;
+    }
+    .filters{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    }
+    .input, select{
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline:none;
+      min-width: 220px;
+    }
+    .input:focus, select:focus{border-color: rgba(243,106,16,.45); box-shadow: 0 0 0 4px rgba(243,106,16,.12);}
+    .list{
+      padding: 12px 10px 14px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 10px;
+      padding: 12px 10px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .row:hover{
+      background:#fbfbfc;
+      border-color: var(--line);
+    }
+    .pname{
+      font-weight:800;
+      font-size: 13px;
+      margin:0 0 4px;
+    }
+    .meta{
+      display:flex; gap:8px; flex-wrap:wrap;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .chip{
+      background: var(--chip);
+      border: 1px solid var(--line);
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color:#111827;
+    }
+    .right{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      align-items:stretch;
+    }
+    .prices{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+    .pricebox{
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 10px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .label{
+      font-size:11px;
+      color:var(--muted);
+      letter-spacing:.2px;
+    }
+    .value{
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .discounted{
+      border: 2px solid rgba(243,106,16,.55);
+      background: rgba(243,106,16,.06);
+    }
+    .value strong{color: var(--pci-orange-dark)}
+    .row-actions{
+      display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;
+    }
+    .btn.small{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .btn.small.secondary{
+      background:#111827;
+      color:#fff;
+      border-color: transparent;
+    }
+    .btn.small.secondary:hover{background:#0b1220}
+    .panel{
+      padding: 12px 14px 14px;
+    }
+    .kpi{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+    }
+    .kpi h3{margin:0; font-size:14px}
+    .kpi .hint{margin:0; font-size:12px; color:var(--muted)}
+    .slider-wrap{
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 12px 10px;
+      background:#fff;
+    }
+    .slider-top{
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .slider-top .mono{font-family:var(--mono); font-weight:800}
+    input[type="range"]{
+      width:100%;
+      accent-color: var(--pci-orange);
+    }
+    .quick{
+      display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px;
+    }
+    .quick .qbtn{
+      border: 1px solid var(--line);
+      background:#fff;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor:pointer;
+    }
+    .quick .qbtn:hover{background:#f9fafb}
+    .basket{
+      margin-top: 14px;
+    }
+    .basket-list{
+      margin-top: 10px;
+      border-top: 1px dashed var(--line);
+      padding-top: 10px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      max-height: 420px;
+      overflow:auto;
+    }
+    .bitem{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background:#fff;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .bhead{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+    }
+    .bhead .name{font-weight:900; font-size:13px}
+    .bhead .rm{
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      font-weight:900;
+      color: var(--muted);
+    }
+    .bhead .rm:hover{color:#111827}
+    .bgrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+    .qty{
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background:#fff;
+    }
+    .qty label{font-size:12px; color:var(--muted)}
+    .qty input{
+      width: 90px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      text-align:right;
+      outline:none;
+    }
+    .footer-actions{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .note{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(17,24,39,.94);
+      color:white;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      display:flex; gap:8px; align-items:center;
+      max-width: 92vw;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-2px);}
+    /* PRINT (PDF Export via Drucken) */
+    @media print{
+      body{background:#fff}
+      header, .grid{display:block}
+      .card{box-shadow:none}
+      .no-print{display:none !important;}
+      .print-only{display:block !important;}
+      .card{border:1px solid #ddd}
+      .app{padding:0}
+    }
+    .print-only{display:none}
+    .print-header{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding: 12px 14px;
+      border-bottom: 1px dashed var(--line);
+      background:#fff;
+    }
+    .print-header .h1{font-weight:900; font-size:16px; margin:0}
+    .print-header .small{font-size:12px; color:var(--muted); margin:2px 0 0}
+    .table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .table th, .table td{
+      border-bottom: 1px solid #eee;
+      padding: 10px 10px;
+      text-align:left;
+      vertical-align:top;
+    }
+    .table th{
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing:.2px;
+      text-transform: uppercase;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      background: rgba(243,106,16,.10);
+      border: 1px solid rgba(243,106,16,.25);
+      color: #7a2c00;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="no-print">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="title">
+          <h1>PCI Demo Preis- & Angebots-App (Dummy)</h1>
+          <p>Alle Preise sind absichtlich fix auf <strong>5,00 €</strong> gesetzt - nur zur Funktions-Demo (keine realen Daten).</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="pill" title="Datenschutz-Hinweis">
+          <span>🔒</span>
+          <span>Demo-Modus: <strong>Fixpreis 5,00 €</strong> - keine Kunden- oder Preisdaten</span>
+        </div>
+        <button class="btn ghost" id="btnReset">Reset</button>
+        <button class="btn primary" id="btnPrint">PDF Export</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Products -->
+      <section class="card">
+        <div class="card-header no-print">
+          <div>
+            <h2>Produkte</h2>
+            <div class="sub">Suche, Filter, Details - Optik und Funktionen wie in der PCI App (Demo-Daten).</div>
+          </div>
+          <div class="filters">
+            <input class="input" id="search" placeholder="Produkt suchen (z. B. Fliesenkleber, Fuge, Abdichtung)..." />
+            <select id="category">
+              <option value="all">Alle Kategorien</option>
+              <option value="Fliesenkleber">Fliesenkleber</option>
+              <option value="Fugenmörtel">Fugenmörtel</option>
+              <option value="Abdichtung">Abdichtung</option>
+              <option value="Grundierung">Grundierung</option>
+              <option value="Spachtel">Spachtel</option>
+            </select>
+          </div>
+        </div>
+        <div class="list" id="productList"></div>
+      </section>
+
+      <!-- RIGHT: Basket -->
+      <aside class="card">
+        <div class="card-header no-print">
+          <div>
+            <h2>Auswahl / Liste</h2>
+            <div class="sub">Rabatt anwenden, Mengen ändern, Export als PDF.</div>
+          </div>
+          <span class="badge" id="badgeCount">0 Positionen</span>
+        </div>
+        <div class="panel">
+          <div class="kpi no-print">
+            <div>
+              <h3>Rabatt</h3>
+              <p class="hint">Fixpreis pro Produkt: 5,00 € (unabhängig von Menge oder Staffel)</p>
+            </div>
+            <div class="mono" id="discLabel">0%</div>
+          </div>
+
+          <div class="slider-wrap no-print">
+            <div class="slider-top">
+              <div style="font-size:12px;color:var(--muted)">Rabatt in %</div>
+              <div class="mono" id="discValue">0.0%</div>
+            </div>
+            <input type="range" id="discount" min="0" max="60" step="0.5" value="0" />
+            <div class="quick">
+              <button class="qbtn" data-disc="0">0%</button>
+              <button class="qbtn" data-disc="10">10%</button>
+              <button class="qbtn" data-disc="15">15%</button>
+              <button class="qbtn" data-disc="20">20%</button>
+              <button class="qbtn" data-disc="25">25%</button>
+              <button class="qbtn" data-disc="30">30%</button>
+              <button class="qbtn" data-disc="40">40%</button>
+            </div>
+          </div>
+
+          <div class="basket">
+            <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+              <div style="font-weight:900">Positionen</div>
+              <button class="btn small" id="btnClear">Liste leeren</button>
+            </div>
+
+            <div class="basket-list" id="basketList"></div>
+
+            <div class="footer-actions no-print">
+              <button class="btn small secondary" id="btnCopy">Liste kopieren</button>
+              <button class="btn small primary" id="btnPrint2">PDF Export</button>
+            </div>
+            <div class="note no-print">
+              Hinweis: Der PDF Export nutzt den Druck-Dialog (druckoptimierte Ansicht). In der Demo werden keine externen Daten geladen.
+            </div>
+          </div>
+        </div>
+
+        <!-- PRINT VIEW -->
+        <div class="print-only">
+          <div class="print-header">
+            <div>
+              <p class="h1">PCI Demo - Angebotsliste (Dummy)</p>
+              <p class="small">Fixpreis je Produkt: 5,00 € - Rabatt: <span id="printDisc">0%</span></p>
+            </div>
+            <div style="text-align:right">
+              <p class="small" style="margin:0">Datum</p>
+              <p style="margin:0;font-family:var(--mono);font-weight:900" id="printDate">-</p>
+            </div>
+          </div>
+          <div style="padding: 0 14px 14px;">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Produkt</th>
+                  <th>Kategorie</th>
+                  <th>Menge</th>
+                  <th>Preis (Demo)</th>
+                  <th>Preis nach Rabatt</th>
+                </tr>
+              </thead>
+              <tbody id="printBody"></tbody>
+            </table>
+            <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+              * Demo-Ausgabe: Preise sind absichtlich nicht real. Nur zur Erläuterung der Funktionsweise.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Gespeichert</div>
+
+<script>
+(() => {
+  // Demo products: intentionally generic but "PCI-like" naming without real pricing.
+  const FIX_PRICE = 5.00;
+
+  const products = [
+    { id:"P-101", name:"PCI Flexmörtel Demo 1", cat:"Fliesenkleber", pack:"25 kg", info:"C2 TE S1 (Demo)" },
+    { id:"P-102", name:"PCI Schnellkleber Demo 2", cat:"Fliesenkleber", pack:"25 kg", info:"Schnell abbindend (Demo)" },
+    { id:"P-103", name:"PCI Natursteinkleber Demo 3", cat:"Fliesenkleber", pack:"25 kg", info:"für Naturstein (Demo)" },
+
+    { id:"P-201", name:"PCI Flexfuge Demo 1", cat:"Fugenmörtel", pack:"5 kg", info:"fein - flexibel (Demo)" },
+    { id:"P-202", name:"PCI Silikon Demo 2", cat:"Fugenmörtel", pack:"310 ml", info:"Sanitär (Demo)" },
+
+    { id:"P-301", name:"PCI Abdichtung 1K Demo", cat:"Abdichtung", pack:"10 kg", info:"unter Fliesen (Demo)" },
+    { id:"P-302", name:"PCI Dichtband Demo", cat:"Abdichtung", pack:"10 m", info:"Ecken/Anschlüsse (Demo)" },
+
+    { id:"P-401", name:"PCI Grundierung Demo", cat:"Grundierung", pack:"5 l", info:"Saugfähige Untergründe (Demo)" },
+
+    { id:"P-501", name:"PCI Spachtelmasse Demo", cat:"Spachtel", pack:"20 kg", info:"Ausgleich (Demo)" }
+  ];
+
+  let discount = 0.0;
+  const basket = new Map(); // id -> {id, qty}
+
+  // Elements
+  const elList = document.getElementById('productList');
+  const elSearch = document.getElementById('search');
+  const elCat = document.getElementById('category');
+  const elDisc = document.getElementById('discount');
+  const elDiscValue = document.getElementById('discValue');
+  const elDiscLabel = document.getElementById('discLabel');
+  const elBasket = document.getElementById('basketList');
+  const elBadge = document.getElementById('badgeCount');
+  const toast = document.getElementById('toast');
+
+  const btnClear = document.getElementById('btnClear');
+  const btnReset = document.getElementById('btnReset');
+  const btnCopy = document.getElementById('btnCopy');
+  const btnPrint = document.getElementById('btnPrint');
+  const btnPrint2 = document.getElementById('btnPrint2');
+
+  // Print elements
+  const printDisc = document.getElementById('printDisc');
+  const printDate = document.getElementById('printDate');
+  const printBody = document.getElementById('printBody');
+
+  function money(x){
+    return x.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  }
+  function discPrice(){
+    const factor = (100 - discount) / 100;
+    return +(FIX_PRICE * factor).toFixed(2);
+  }
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    window.clearTimeout(showToast._t);
+    showToast._t = window.setTimeout(() => toast.classList.remove('show'), 1400);
+  }
+
+  function renderProducts(){
+    const q = (elSearch.value || "").trim().toLowerCase();
+    const cat = elCat.value;
+
+    const filtered = products.filter(p => {
+      const okCat = cat === "all" ? true : p.cat === cat;
+      const okQ = q.length === 0 ? true : (p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q) || p.id.toLowerCase().includes(q));
+      return okCat && okQ;
+    });
+
+    elList.innerHTML = "";
+    filtered.forEach(p => {
+      const row = document.createElement('div');
+      row.className = "row";
+
+      const left = document.createElement('div');
+      left.innerHTML = `
+        <p class="pname">${p.name}</p>
+        <div class="meta">
+          <span class="chip">${p.id}</span>
+          <span class="chip">${p.cat}</span>
+          <span class="chip">${p.pack}</span>
+          <span class="chip">${p.info}</span>
+        </div>
+      `;
+
+      const right = document.createElement('div');
+      right.className = "right";
+
+      const prices = document.createElement('div');
+      prices.className = "prices";
+      prices.innerHTML = `
+        <div class="pricebox">
+          <div class="label">AP Preis (Demo)</div>
+          <div class="value">${money(FIX_PRICE)}</div>
+        </div>
+        <div class="pricebox">
+          <div class="label">Palettenpreis (Demo)</div>
+          <div class="value">${money(FIX_PRICE)}</div>
+        </div>
+        <div class="pricebox discounted" style="grid-column: 1 / span 2;">
+          <div class="label">Preis nach Rabatt</div>
+          <div class="value"><strong>${money(discPrice())}</strong> <span style="color:var(--muted);font-weight:700">bei ${discount.toFixed(1)}%</span></div>
+        </div>
+      `;
+
+      const actions = document.createElement('div');
+      actions.className = "row-actions";
+      const btnTmb = document.createElement('button');
+      btnTmb.className = "btn small";
+      btnTmb.textContent = "Technisches Merkblatt";
+      btnTmb.addEventListener('click', () => {
+        alert("Demo: Technisches Merkblatt\\n\\nIn der echten App würde hier das passende PDF/Link geöffnet.");
+      });
+
+      const btnAdd = document.createElement('button');
+      btnAdd.className = "btn small secondary";
+      btnAdd.textContent = "Zur Liste hinzufügen";
+      btnAdd.addEventListener('click', () => addToBasket(p.id));
+
+      // As requested: TMB left, Add right (swap-friendly layout)
+      actions.appendChild(btnTmb);
+      actions.appendChild(btnAdd);
+
+      right.appendChild(prices);
+      right.appendChild(actions);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      elList.appendChild(row);
+    });
+
+    if(filtered.length === 0){
+      const empty = document.createElement('div');
+      empty.style.padding = "18px 12px";
+      empty.style.color = "var(--muted)";
+      empty.innerHTML = "Keine Treffer - bitte Suchbegriff oder Filter anpassen.";
+      elList.appendChild(empty);
+    }
+  }
+
+  function addToBasket(id){
+    const existing = basket.get(id);
+    if(existing){
+      existing.qty = Math.min(9999, existing.qty + 1);
+    }else{
+      basket.set(id, {id, qty: 1});
+    }
+    renderBasket();
+    showToast("Zur Liste hinzugefügt");
+  }
+
+  function removeFromBasket(id){
+    basket.delete(id);
+    renderBasket();
+    showToast("Entfernt");
+  }
+
+  function setQty(id, qty){
+    qty = Number(qty);
+    if(!Number.isFinite(qty) || qty <= 0){
+      basket.delete(id);
+    }else{
+      basket.get(id).qty = Math.min(999999, Math.floor(qty));
+    }
+    renderBasket();
+  }
+
+  function basketItems(){
+    return Array.from(basket.values()).map(b => {
+      const p = products.find(x => x.id === b.id);
+      return { ...p, qty: b.qty };
+    });
+  }
+
+  function renderBasket(){
+    const items = basketItems();
+
+    elBadge.textContent = `${items.length} Position${items.length === 1 ? "" : "en"}`;
+    elBasket.innerHTML = "";
+
+    if(items.length === 0){
+      const empty = document.createElement('div');
+      empty.style.padding = "14px 4px";
+      empty.style.color = "var(--muted)";
+      empty.innerHTML = "Noch keine Produkte in der Liste.";
+      elBasket.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const box = document.createElement('div');
+      box.className = "bitem";
+      box.innerHTML = `
+        <div class="bhead">
+          <div>
+            <div class="name">${item.name}</div>
+            <div class="meta" style="margin-top:6px">
+              <span class="chip">${item.id}</span>
+              <span class="chip">${item.cat}</span>
+              <span class="chip">${item.pack}</span>
+            </div>
+          </div>
+          <button class="rm" title="Entfernen">✕</button>
+        </div>
+
+        <div class="bgrid">
+          <div class="qty">
+            <label>Menge</label>
+            <input inputmode="numeric" pattern="[0-9]*" value="${item.qty}" />
+          </div>
+          <div class="pricebox discounted">
+            <div class="label">Preis nach Rabatt</div>
+            <div class="value"><strong>${money(discPrice())}</strong></div>
+          </div>
+          <div class="pricebox">
+            <div class="label">Preis (Demo)</div>
+            <div class="value">${money(FIX_PRICE)}</div>
+          </div>
+          <div class="pricebox">
+            <div class="label">Zwischensumme (Demo)</div>
+            <div class="value">${money(discPrice() * item.qty)}</div>
+          </div>
+        </div>
+      `;
+
+      const rm = box.querySelector('.rm');
+      rm.addEventListener('click', () => removeFromBasket(item.id));
+
+      const qtyInput = box.querySelector('input');
+      qtyInput.addEventListener('change', (e) => setQty(item.id, e.target.value));
+      qtyInput.addEventListener('keyup', (e) => {
+        if(e.key === "Enter") setQty(item.id, e.target.value);
+      });
+
+      elBasket.appendChild(box);
+    });
+  }
+
+  function setDiscount(val){
+    discount = Math.max(0, Math.min(60, Number(val) || 0));
+    elDisc.value = discount;
+    elDiscValue.textContent = discount.toFixed(1) + "%";
+    elDiscLabel.textContent = Math.round(discount) + "%";
+    renderProducts();
+    renderBasket();
+  }
+
+  function resetAll(){
+    discount = 0.0;
+    basket.clear();
+    elSearch.value = "";
+    elCat.value = "all";
+    setDiscount(0);
+    renderProducts();
+    renderBasket();
+    showToast("Zurückgesetzt");
+  }
+
+  function buildPrint(){
+    const items = basketItems();
+    printDisc.textContent = discount.toFixed(1) + "%";
+    const d = new Date();
+    printDate.textContent = d.toLocaleDateString('de-DE');
+    printBody.innerHTML = "";
+
+    if(items.length === 0){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="5" style="color:#6b7280">Keine Positionen in der Liste.</td>`;
+      printBody.appendChild(tr);
+      return;
+    }
+
+    items.forEach(it => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${it.name}</strong><div style="color:#6b7280;font-size:11px;margin-top:3px">${it.id} - ${it.pack}</div></td>
+        <td>${it.cat}</td>
+        <td>${it.qty}</td>
+        <td>${money(FIX_PRICE)}</td>
+        <td><strong>${money(discPrice())}</strong></td>
+      `;
+      printBody.appendChild(tr);
+    });
+  }
+
+  function exportPdf(){
+    // We use the browser's print dialog (works on iOS/desktop) for PDF export.
+    buildPrint();
+    window.print();
+  }
+
+  function copyList(){
+    const items = basketItems();
+    if(items.length === 0){
+      showToast("Liste ist leer");
+      return;
+    }
+    const lines = [];
+    lines.push(`PCI Demo - Liste (Dummy)`);
+    lines.push(`Rabatt: ${discount.toFixed(1)}% | Fixpreis: ${money(FIX_PRICE)} | Preis nach Rabatt: ${money(discPrice())}`);
+    lines.push(``);
+    items.forEach(it => {
+      lines.push(`- ${it.name} (${it.id}) | ${it.cat} | ${it.pack} | Menge: ${it.qty} | Preis nach Rabatt: ${money(discPrice())}`);
+    });
+    const text = lines.join("\n");
+    navigator.clipboard.writeText(text).then(() => {
+      showToast("Liste kopiert");
+    }).catch(() => {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast("Liste kopiert");
+    });
+  }
+
+  // Events
+  elSearch.addEventListener('input', renderProducts);
+  elCat.addEventListener('change', renderProducts);
+  elDisc.addEventListener('input', (e) => setDiscount(e.target.value));
+
+  document.querySelectorAll('.qbtn').forEach(b => {
+    b.addEventListener('click', () => setDiscount(b.getAttribute('data-disc')));
+  });
+
+  btnClear.addEventListener('click', () => { basket.clear(); renderBasket(); showToast("Liste geleert"); });
+  btnReset.addEventListener('click', resetAll);
+  btnCopy.addEventListener('click', copyList);
+  btnPrint.addEventListener('click', exportPdf);
+  btnPrint2.addEventListener('click', exportPdf);
+
+  // Initial render
+  setDiscount(0);
+  renderProducts();
+  renderBasket();
+})();
+</script>
+</body>
+</html>
