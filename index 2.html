@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PCI - Demo Preis-App (Dummy)</title>
+  <style>
+    :root{
+      --bg:#f4f5f7;
+      --card:#ffffff;
+      --text:#111111;
+      --muted:#6b7280;
+      --line:#e6e6e6;
+
+      --pci-orange:#f36a10;
+      --pci-orange-dark:#d65607;
+
+      --graybar:#f1f2f4;
+      --shadow: 0 8px 20px rgba(0,0,0,.06);
+      --radius:14px;
+
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background: var(--bg);
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:14px 12px 28px}
+
+    .top{
+      border-radius: var(--radius);
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .top .datebar{
+      background: var(--graybar);
+      padding: 10px 12px;
+      font-weight: 800;
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .top .datebar .mono{font-family:var(--mono)}
+    .top .titlebar{
+      background: var(--pci-orange);
+      color:#fff;
+      padding: 12px 12px;
+      font-weight: 900;
+      line-height: 1.2;
+      font-size: 15px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .top .titlebar .sub{
+      font-weight:700;
+      font-size: 12px;
+      opacity:.95;
+      margin-top: 4px;
+    }
+    .top .infobar{
+      background: var(--graybar);
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #111;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      border-top: 1px dashed #d8d8d8;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid #ddd;
+      background:#fff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .tag .mono{font-family:var(--mono)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    .btn{
+      border:1px solid #ddd;
+      background:#fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor:pointer;
+      user-select:none;
+      font-size: 13px;
+    }
+    .btn:hover{background:#fafafa}
+    .btn.primary{
+      background: var(--pci-orange);
+      color:#fff;
+      border-color: transparent;
+    }
+    .btn.primary:hover{background: var(--pci-orange-dark)}
+    .btn.small{padding: 8px 10px; font-size: 12px; border-radius: 12px;}
+    .btn.dark{background:#111; color:#fff; border-color: transparent;}
+    .btn.dark:hover{background:#000;}
+
+    .grid{display:grid;grid-template-columns:1.35fr .65fr;gap:12px;align-items:start}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}}
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .head{
+      padding: 10px 12px;
+      background: var(--graybar);
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px dashed #d8d8d8;
+    }
+    .card .head .muted{font-weight:700;color:var(--muted);font-size:12px}
+    .card .body{padding:10px 10px 12px}
+
+    .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .input, select{
+      border: 1px solid #ddd;
+      background:#fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      outline:none;
+      min-width: 240px;
+    }
+    .input:focus, select:focus{border-color: rgba(243,106,16,.55); box-shadow: 0 0 0 4px rgba(243,106,16,.12);}
+
+    .plist{display:flex;flex-direction:column;gap:10px}
+    .prow{
+      border: 1px dashed #d8d8d8;
+      border-radius: 14px;
+      background:#fff;
+      padding: 10px;
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 10px;
+    }
+    @media (max-width:980px){.prow{grid-template-columns:1fr}}
+    .pname{font-weight:1000;font-size:13px;margin:0 0 6px}
+    .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+    .chip{
+      border:1px solid #e1e1e1;
+      background:#fff;
+      border-radius:999px;
+      padding: 5px 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color:#111;
+      font-weight: 800;
+    }
+    .rightcol{display:flex;flex-direction:column;gap:10px;justify-content:space-between}
+
+    .prices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .box{border:1px solid #e1e1e1;border-radius:12px;padding:10px;background:#fff}
+    .label{font-size:11px;color:var(--muted);font-weight:800}
+    .value{font-family:var(--mono);font-weight:1000;font-size:14px;margin-top:4px}
+    .discbox{border:2px solid rgba(243,106,16,.55);background: rgba(243,106,16,.06);grid-column: 1 / span 2;}
+    .value strong{color: var(--pci-orange-dark)}
+
+    .row-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+    .badge{
+      font-family: var(--mono);
+      font-weight: 1000;
+      font-size: 12px;
+      border: 1px solid rgba(243,106,16,.35);
+      background: rgba(243,106,16,.10);
+      padding: 6px 10px;
+      border-radius: 999px;
+      color:#7a2c00;
+    }
+    .slider{border: 1px dashed #d8d8d8;border-radius:14px;padding:10px;background:#fff}
+    .s-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .s-top .mono{font-family:var(--mono);font-weight:1000}
+    input[type="range"]{width:100%;accent-color:var(--pci-orange);margin-top:10px}
+    .quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .qbtn{border:1px solid #ddd;background:#fff;border-radius:999px;padding:8px 10px;font-weight:1000;font-size:12px;cursor:pointer}
+    .qbtn:hover{background:#fafafa}
+
+    .b-list{margin-top:10px;display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto;padding-right:2px}
+    .bitem{border:1px dashed #d8d8d8;border-radius:14px;background:#fff;padding:10px;display:flex;flex-direction:column;gap:10px}
+    .bhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .bhead .name{font-weight:1000;font-size:13px}
+    .rm{border:none;background:transparent;cursor:pointer;font-weight:1000;color:var(--muted);font-size:14px}
+    .rm:hover{color:#111}
+    .bgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .qty{border:1px solid #e1e1e1;border-radius:12px;padding:10px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .qty label{font-size:12px;color:var(--muted);font-weight:800}
+    .qty input{width:92px;border:1px solid #ddd;border-radius:10px;padding:8px 10px;font-size:13px;text-align:right;outline:none}
+
+    .foot-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:flex-end}
+    .note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.35}
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(17,17,17,.92);
+      color:#fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      max-width: 92vw;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(-2px);}
+
+    @media print{
+      body{background:#fff}
+      .no-print{display:none !important;}
+      .print-only{display:block !important;}
+      .card{box-shadow:none}
+      .wrap{padding:0}
+      .card{border:1px solid #ddd}
+    }
+    .print-only{display:none}
+    .ptable{width:100%;border-collapse:collapse;font-size:12px}
+    .ptable th,.ptable td{border-bottom:1px solid #eee;padding:10px 10px;text-align:left;vertical-align:top}
+    .ptable th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.2px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="top no-print">
+      <div class="datebar">
+        <div>Datum</div>
+        <div class="mono" id="today">-</div>
+      </div>
+      <div class="titlebar">
+        <div>
+          PCI Demo Preis- & Angebots-App (Dummy)
+          <div class="sub">Optik & Funktionen wie die PCI App - aber ohne scharfe Daten</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnReset">Reset</button>
+          <button class="btn primary" id="btnPrint">PDF Export</button>
+        </div>
+      </div>
+      <div class="infobar">
+        <div class="tag">🔒 Demo-Modus: <span class="mono">Fixpreis 5,00 €</span></div>
+        <div class="tag">Keine Kunden- oder Preisdaten - nur Funktionsdemo</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="head no-print">
+          <div>
+            Produkte
+            <div class="muted">Suche / Filter - reale Produktnamen, Fantasiepreise</div>
+          </div>
+          <div class="filters">
+            <input class="input" id="search" placeholder="Produkt suchen (z. B. Nanolight, Periplan, Silcofug)..." />
+            <select id="category">
+              <option value="all">Alle Kategorien</option>
+              <option value="Fliesenkleber">Fliesenkleber</option>
+              <option value="Fugen & Silikon">Fugen & Silikon</option>
+              <option value="Abdichtung">Abdichtung</option>
+              <option value="Grundierung">Grundierung</option>
+              <option value="Spachtel & Ausgleich">Spachtel & Ausgleich</option>
+              <option value="Epoxid">Epoxid</option>
+            </select>
+          </div>
+        </div>
+        <div class="body">
+          <div class="plist" id="productList"></div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="head no-print">
+          <div>
+            Auswahl / Liste
+            <div class="muted">Rabatt, Mengen, Export</div>
+          </div>
+          <div class="badge" id="badgeCount">0 Positionen</div>
+        </div>
+
+        <div class="body">
+          <div class="slider no-print">
+            <div class="s-top">
+              <div style="font-weight:1000">Rabatt</div>
+              <div class="mono" id="discValue">0.0%</div>
+            </div>
+            <div style="margin-top:6px;font-size:12px;color:var(--muted);font-weight:800">
+              Fixpreis pro Produkt (Demo): 5,00 € - unabhängig von Menge oder Staffel
+            </div>
+            <input type="range" id="discount" min="0" max="60" step="0.5" value="0" />
+            <div class="quick">
+              <button class="qbtn" data-disc="0">0%</button>
+              <button class="qbtn" data-disc="10">10%</button>
+              <button class="qbtn" data-disc="15">15%</button>
+              <button class="qbtn" data-disc="20">20%</button>
+              <button class="qbtn" data-disc="25">25%</button>
+              <button class="qbtn" data-disc="30">30%</button>
+              <button class="qbtn" data-disc="40">40%</button>
+            </div>
+          </div>
+
+          <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <div style="font-weight:1000">Positionen</div>
+            <button class="btn small" id="btnClear">Liste leeren</button>
+          </div>
+
+          <div class="b-list" id="basketList"></div>
+
+          <div class="foot-actions no-print">
+            <button class="btn small dark" id="btnCopy">Liste kopieren</button>
+            <button class="btn small primary" id="btnPrint2">PDF Export</button>
+          </div>
+
+          <div class="note no-print">
+            PDF Export erfolgt über den Druck-Dialog (druckoptimierte Ansicht). In dieser Demo werden keine externen Daten geladen.
+          </div>
+        </div>
+
+        <div class="print-only">
+          <div style="padding:12px 14px;border-bottom:1px dashed #d8d8d8">
+            <div style="font-weight:1000;font-size:16px">PCI Demo - Angebotsliste (Dummy)</div>
+            <div style="margin-top:4px;font-size:12px;color:var(--muted)">
+              Fixpreis je Produkt: 5,00 € - Rabatt: <span id="printDisc">0%</span> - Datum: <span id="printDate">-</span>
+            </div>
+          </div>
+          <div style="padding: 0 14px 14px;">
+            <table class="ptable">
+              <thead>
+                <tr>
+                  <th>Produkt</th>
+                  <th>Kategorie</th>
+                  <th>Menge</th>
+                  <th>Preis (Demo)</th>
+                  <th>Preis nach Rabatt</th>
+                </tr>
+              </thead>
+              <tbody id="printBody"></tbody>
+            </table>
+            <div style="margin-top:12px;font-size:12px;color:var(--muted)">
+              * Demo-Ausgabe: Fantasiepreise. Nur zur Erläuterung der Funktionsweise.
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">OK</div>
+
+<script>
+(() => {
+  const FIX_PRICE = 5.00;
+
+  const products = [
+    { id:"PCI-001", name:"PCI Nanolight", cat:"Fliesenkleber", pack:"15 kg", info:"Leichtkleber (Demo)" },
+    { id:"PCI-002", name:"PCI Flexmörtel S1", cat:"Fliesenkleber", pack:"25 kg", info:"flexibel (Demo)" },
+    { id:"PCI-003", name:"PCI FT Extra", cat:"Fliesenkleber", pack:"25 kg", info:"C2 TE (Demo)" },
+    { id:"PCI-004", name:"PCI Rapidflott", cat:"Spachtel & Ausgleich", pack:"25 kg", info:"Schnell-Ausgleich (Demo)" },
+    { id:"PCI-005", name:"PCI Periplan", cat:"Spachtel & Ausgleich", pack:"25 kg", info:"Bodenausgleich (Demo)" },
+    { id:"PCI-006", name:"PCI Gisogrund", cat:"Grundierung", pack:"5 l", info:"Grundierung (Demo)" },
+    { id:"PCI-007", name:"PCI Seccoral 2K Rapid", cat:"Abdichtung", pack:"24 kg", info:"2K Abdichtung (Demo)" },
+    { id:"PCI-008", name:"PCI Pecilastic W", cat:"Abdichtung", pack:"14 kg", info:"Dichtschlämme (Demo)" },
+    { id:"PCI-009", name:"PCI Collastic", cat:"Abdichtung", pack:"20 kg", info:"Verbundabdichtung (Demo)" },
+    { id:"PCI-010", name:"PCI Silcofug E", cat:"Fugen & Silikon", pack:"310 ml", info:"Silikon (Demo)" },
+    { id:"PCI-011", name:"PCI Flexfuge Premium", cat:"Fugen & Silikon", pack:"5 kg", info:"Flexfuge (Demo)" },
+    { id:"PCI-012", name:"PCI Durapox Premium", cat:"Epoxid", pack:"5 kg", info:"Epoxidfuge (Demo)" }
+  ];
+
+  let discount = 0.0;
+  const basket = new Map();
+
+  const elToday = document.getElementById('today');
+  const elList = document.getElementById('productList');
+  const elSearch = document.getElementById('search');
+  const elCat = document.getElementById('category');
+
+  const elDisc = document.getElementById('discount');
+  const elDiscValue = document.getElementById('discValue');
+
+  const elBasket = document.getElementById('basketList');
+  const elBadge = document.getElementById('badgeCount');
+
+  const btnClear = document.getElementById('btnClear');
+  const btnReset = document.getElementById('btnReset');
+  const btnCopy = document.getElementById('btnCopy');
+  const btnPrint = document.getElementById('btnPrint');
+  const btnPrint2 = document.getElementById('btnPrint2');
+
+  const printDisc = document.getElementById('printDisc');
+  const printDate = document.getElementById('printDate');
+  const printBody = document.getElementById('printBody');
+
+  const toast = document.getElementById('toast');
+
+  function money(x){
+    return x.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
+  }
+  function discPrice(){
+    const factor = (100 - discount) / 100;
+    return +(FIX_PRICE * factor).toFixed(2);
+  }
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    window.clearTimeout(showToast._t);
+    showToast._t = window.setTimeout(() => toast.classList.remove('show'), 1300);
+  }
+
+  function renderProducts(){
+    const q = (elSearch.value || "").trim().toLowerCase();
+    const cat = elCat.value;
+
+    const filtered = products.filter(p => {
+      const okCat = cat === "all" ? true : p.cat === cat;
+      const okQ = q.length === 0 ? true : (p.name.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q) || p.id.toLowerCase().includes(q));
+      return okCat && okQ;
+    });
+
+    elList.innerHTML = "";
+    filtered.forEach(p => {
+      const row = document.createElement('div');
+      row.className = "prow";
+
+      const left = document.createElement('div');
+      left.innerHTML = `
+        <p class="pname">${p.name}</p>
+        <div class="meta">
+          <span class="chip">${p.id}</span>
+          <span class="chip">${p.cat}</span>
+          <span class="chip">${p.pack}</span>
+          <span class="chip">${p.info}</span>
+        </div>
+      `;
+
+      const right = document.createElement('div');
+      right.className = "rightcol";
+
+      const prices = document.createElement('div');
+      prices.className = "prices";
+      prices.innerHTML = `
+        <div class="box">
+          <div class="label">AP Preis (Demo)</div>
+          <div class="value">${money(FIX_PRICE)}</div>
+        </div>
+        <div class="box">
+          <div class="label">Palettenpreis (Demo)</div>
+          <div class="value">${money(FIX_PRICE)}</div>
+        </div>
+        <div class="box discbox">
+          <div class="label">Preis nach Rabatt</div>
+          <div class="value"><strong>${money(discPrice())}</strong> <span style="color:var(--muted);font-weight:900">bei ${discount.toFixed(1)}%</span></div>
+        </div>
+      `;
+
+      const actions = document.createElement('div');
+      actions.className = "row-actions";
+
+      const btnTmb = document.createElement('button');
+      btnTmb.className = "btn small";
+      btnTmb.textContent = "Technisches Merkblatt";
+      btnTmb.addEventListener('click', () => {
+        alert("Demo: Technisches Merkblatt\n\nIn der echten App würde hier das passende PDF/Link geöffnet.");
+      });
+
+      const btnAdd = document.createElement('button');
+      btnAdd.className = "btn small dark";
+      btnAdd.textContent = "Zur Liste hinzufügen";
+      btnAdd.addEventListener('click', () => addToBasket(p.id));
+
+      actions.appendChild(btnTmb);
+      actions.appendChild(btnAdd);
+
+      right.appendChild(prices);
+      right.appendChild(actions);
+
+      row.appendChild(left);
+      row.appendChild(right);
+      elList.appendChild(row);
+    });
+
+    if(filtered.length === 0){
+      const empty = document.createElement('div');
+      empty.style.padding = "14px 6px";
+      empty.style.color = "var(--muted)";
+      empty.style.fontWeight = "800";
+      empty.textContent = "Keine Treffer - bitte Suchbegriff oder Filter anpassen.";
+      elList.appendChild(empty);
+    }
+  }
+
+  function addToBasket(id){
+    const existing = basket.get(id);
+    if(existing){ existing.qty = Math.min(9999, existing.qty + 1); }
+    else{ basket.set(id, {id, qty: 1}); }
+    renderBasket();
+    showToast("Zur Liste hinzugefügt");
+  }
+
+  function removeFromBasket(id){
+    basket.delete(id);
+    renderBasket();
+    showToast("Entfernt");
+  }
+
+  function setQty(id, qty){
+    qty = Number(qty);
+    if(!Number.isFinite(qty) || qty <= 0){ basket.delete(id); }
+    else{ basket.get(id).qty = Math.min(999999, Math.floor(qty)); }
+    renderBasket();
+  }
+
+  function basketItems(){
+    return Array.from(basket.values()).map(b => {
+      const p = products.find(x => x.id === b.id);
+      return { ...p, qty: b.qty };
+    });
+  }
+
+  function renderBasket(){
+    const items = basketItems();
+    elBadge.textContent = `${items.length} Position${items.length === 1 ? "" : "en"}`;
+    elBasket.innerHTML = "";
+
+    if(items.length === 0){
+      const empty = document.createElement('div');
+      empty.style.padding = "12px 4px";
+      empty.style.color = "var(--muted)";
+      empty.style.fontWeight = "800";
+      empty.textContent = "Noch keine Produkte in der Liste.";
+      elBasket.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const box = document.createElement('div');
+      box.className = "bitem";
+      box.innerHTML = `
+        <div class="bhead">
+          <div>
+            <div class="name">${item.name}</div>
+            <div class="meta" style="margin-top:6px">
+              <span class="chip">${item.id}</span>
+              <span class="chip">${item.cat}</span>
+              <span class="chip">${item.pack}</span>
+            </div>
+          </div>
+          <button class="rm" title="Entfernen">✕</button>
+        </div>
+
+        <div class="bgrid">
+          <div class="qty">
+            <label>Menge</label>
+            <input inputmode="numeric" pattern="[0-9]*" value="${item.qty}" />
+          </div>
+          <div class="box discbox">
+            <div class="label">Preis nach Rabatt</div>
+            <div class="value"><strong>${money(discPrice())}</strong></div>
+          </div>
+          <div class="box">
+            <div class="label">Preis (Demo)</div>
+            <div class="value">${money(FIX_PRICE)}</div>
+          </div>
+          <div class="box">
+            <div class="label">Zwischensumme (Demo)</div>
+            <div class="value">${money(discPrice() * item.qty)}</div>
+          </div>
+        </div>
+      `;
+
+      box.querySelector('.rm').addEventListener('click', () => removeFromBasket(item.id));
+
+      const qtyInput = box.querySelector('input');
+      qtyInput.addEventListener('change', (e) => setQty(item.id, e.target.value));
+      qtyInput.addEventListener('keyup', (e) => { if(e.key === "Enter") setQty(item.id, e.target.value); });
+
+      elBasket.appendChild(box);
+    });
+  }
+
+  function setDiscount(val){
+    discount = Math.max(0, Math.min(60, Number(val) || 0));
+    elDisc.value = discount;
+    elDiscValue.textContent = discount.toFixed(1) + "%";
+    renderProducts();
+    renderBasket();
+  }
+
+  function resetAll(){
+    discount = 0.0;
+    basket.clear();
+    elSearch.value = "";
+    elCat.value = "all";
+    setDiscount(0);
+    showToast("Zurückgesetzt");
+  }
+
+  function buildPrint(){
+    const items = basketItems();
+    printDisc.textContent = discount.toFixed(1) + "%";
+    const d = new Date();
+    printDate.textContent = d.toLocaleDateString('de-DE');
+    printBody.innerHTML = "";
+
+    if(items.length === 0){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="5" style="color:#6b7280">Keine Positionen in der Liste.</td>`;
+      printBody.appendChild(tr);
+      return;
+    }
+
+    items.forEach(it => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${it.name}</strong><div style="color:#6b7280;font-size:11px;margin-top:3px">${it.id} - ${it.pack}</div></td>
+        <td>${it.cat}</td>
+        <td>${it.qty}</td>
+        <td>${money(FIX_PRICE)}</td>
+        <td><strong>${money(discPrice())}</strong></td>
+      `;
+      printBody.appendChild(tr);
+    });
+  }
+
+  function exportPdf(){ buildPrint(); window.print(); }
+
+  function copyList(){
+    const items = basketItems();
+    if(items.length === 0){ showToast("Liste ist leer"); return; }
+    const lines = [];
+    lines.push("PCI Demo - Liste (Dummy)");
+    lines.push(`Rabatt: ${discount.toFixed(1)}% | Fixpreis: ${money(FIX_PRICE)} | Preis nach Rabatt: ${money(discPrice())}`);
+    lines.push("");
+    items.forEach(it => lines.push(`- ${it.name} (${it.id}) | ${it.cat} | ${it.pack} | Menge: ${it.qty} | Preis nach Rabatt: ${money(discPrice())}`));
+    const text = lines.join("\n");
+    navigator.clipboard.writeText(text).then(() => showToast("Liste kopiert"))
+      .catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast("Liste kopiert");
+      });
+  }
+
+  elToday.textContent = new Date().toLocaleDateString('de-DE');
+
+  elSearch.addEventListener('input', renderProducts);
+  elCat.addEventListener('change', renderProducts);
+  elDisc.addEventListener('input', (e) => setDiscount(e.target.value));
+  document.querySelectorAll('.qbtn').forEach(b => b.addEventListener('click', () => setDiscount(b.getAttribute('data-disc'))));
+
+  btnClear.addEventListener('click', () => { basket.clear(); renderBasket(); showToast("Liste geleert"); });
+  btnReset.addEventListener('click', resetAll);
+  btnCopy.addEventListener('click', copyList);
+  btnPrint.addEventListener('click', exportPdf);
+  btnPrint2.addEventListener('click', exportPdf);
+
+  setDiscount(0);
+  renderProducts();
+  renderBasket();
+})();
+</script>
+</body>
+</html>
